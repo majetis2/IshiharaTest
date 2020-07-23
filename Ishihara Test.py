@@ -1,41 +1,21 @@
 import tkinter
 from tkinter import*
-from PIL import ImageTk, Image
 import random
-
-#0 -nothing
-#-1 - unsure
-
-#Create a list of plates
-plates = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
-          "16", "17", "18", "19", "20", "21", "22", "23", "24", "25","26", "27", "28",
-          "29", "30", "31", "32", "33", "34", "35", "36", "37", "38"]
-
-choices = [["1","2","3","4"]]
-
-answers_choice = choices*38
-
-print(answers_choice)
+import speech_recognition as sr
 
 
-normal_answers = [12,8,6,29,57,5,3,15,74,2,6,97,45,5,7,16,73,0,0,0,0,26,42,
-                  35,96,'purple and red spots', 'purple and red spots', 0, 0, 'blu-green line',
-                  'blue-green line', 'ornage line', 'orange line','blue-green and yellow-green line',
-                  'blue-green and yellow-green line', 'violet and orange line', 'violet and orange line',
-                  'orange line']
+#List of plates
+plates = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25"]
 
-redgreen_answers = []
-
-prot_answers = []
-
-deut_answers = []
+normal_answers = ["12", "8" ,"6", "29", "57", "5" , "3", "15", "74", "2", "6", "97", "45", "5", "7", "16", "73", "nothing", "nothing", "nothing", "nothing",
+                  "26", "42", "35", "96"]
 
 user_answer = []
 
 indexes = []
 def gen():
     global indexes
-    while(len(indexes) < len(plates)):  #Needs to change
+    while(len(indexes) < len(plates)):  
         x = random.randint(0,len(plates)-1)
         if x in indexes:
             continue
@@ -46,9 +26,6 @@ def gen():
 def showresult(score):
     lblQuestion.destroy()
     r1.destroy()
-    r2.destroy()
-    r3.destroy()
-    r4.destroy()
     labelimage = Label(
         root,
         background = "#ffffff",
@@ -61,63 +38,55 @@ def showresult(score):
         background = "#ffffff",
     )
     labelresulttext.pack()
-##    if score >= 20:
-##        img = PhotoImage(file="great.png")
-##        labelimage.configure(image=img)
-##        labelimage.image = img
-##        labelresulttext.configure(text="You Are Excellent !!")
-##    elif(score >= 10 and score < 20):
-##        img = PhotoImage(file="ok.png")
-##        labelimage.configure(image=img)
-##        labelimage.image = img
-##        labelresulttext.configure(text="You Can be Better !!")
-##    else:
-##        img = PhotoImage(file="bad.png")
-##        labelimage.configure(image=img)
-##        labelimage.image = img
-##        labelresulttext.configure(text="You Should Work Hard !!")
-        
-        
+    if score >= 10:
+        #img = PhotoImage(file="great.png")    #Need to change this image
+        #labelimage.configure(image=img) 
+        #labelimage.image = img
+        labelresulttext.configure(text="You Have Normal Vision")
+
+    else:
+        #img = PhotoImage(file="bad.png")    #Need to change this image
+        #labelimage.configure(image=img)
+        #labelimage.image = img
+        labelresulttext.configure(text="You Have Red-Green Blindness")
 
 def calc():
-    global indexes,user_answer,answers
+    global indexes,user_answer,normal_answers
     x = 0
     score = 0
     for i in indexes:
-        if user_answer[x] == answers[i]:
-            score = score+5
+        if user_answer[x] == normal_answers[i]:
+            score = score+1
         x += 1
     print(score)
     showresult(score)
-        
-
-
+    
 ques = 1
 def selected():
-    global radiovar, user_answer
-    global lblQuestion,r1,r2,r3,r4
+    global lblQuestion,r1, user_answer, x
     global ques
-    x = radiovar.get()
-    user_answer.append(x)
-    radiovar.set(-1)
-    if ques < len(plates):  #Need to change this
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        audio_text = r.listen(source)
+        try:
+            x = r.recognize_google(audio_text)
+            user_answer.append(x)
+        
+        except:
+           user_answer.append("")
+
+    if ques < len(plates): 
         plate_change = PhotoImage(file = plates[indexes[ques]]+'.png')
         lblQuestion.config(image = plate_change)
         lblQuestion.img = plate_change
-        r1['text'] = answers_choice[indexes[ques]][0]
-        r2['text'] = answers_choice[indexes[ques]][1]
-        r3['text'] = answers_choice[indexes[ques]][2]
-        r4['text'] = answers_choice[indexes[ques]][3]
+        r1['text'] = "Record"
         ques += 1
-    else:
+
+    else: 
         calc()
-    #print(x)
-
-
-
 
 def startquiz():
-    global lblQuestion,r1,r2,r3,r4
+    global lblQuestion, r1
     photo = PhotoImage(file = plates[indexes[0]]+".png")
     lblQuestion = Label(
         root,
@@ -127,54 +96,16 @@ def startquiz():
     lblQuestion.image = photo
     lblQuestion.pack(pady=(100,30))
 
-    global radiovar
-    radiovar = IntVar()
-    radiovar.set(-1)
-
-
     r1 = Radiobutton(
         root,
-        text = answers_choice[indexes[0]][0],
+        text = "Record",
         font = ("Times",12),
         value = 0,
-        variable = radiovar,
+        indicator = 0,
         command = selected,
         background = "#ffffff",
     )
-    r1.pack(pady=5)
-
-    r2 = Radiobutton(
-        root,
-        text = answers_choice[indexes[0]][1],
-        font = ("Times",12),
-        value = 1,
-        variable = radiovar,
-        command = selected,
-        background = "#ffffff",
-    )
-    r2.pack(pady=5)
-
-    r3 = Radiobutton(
-        root,
-        text = answers_choice[indexes[0]][2],
-        font = ("Times",12),
-        value = 2,
-        variable = radiovar,
-        command = selected,
-        background = "#ffffff",
-    )
-    r3.pack(pady=5)
-
-    r4 = Radiobutton(
-        root,
-        text = answers_choice[indexes[0]][3],
-        font = ("Times",12),
-        value = 3,
-        variable = radiovar,
-        command = selected,
-        background = "#ffffff",
-    )
-    r4.pack(pady=5)
+    r1.pack(fill = X, pady=5)
 
 
 def startIspressed():
@@ -190,7 +121,7 @@ def startIspressed():
 
 root = tkinter.Tk()
 root.title('Ishihara Test')
-root.geometry('700x600')
+root.geometry('411x823')
 root.config(background = "#ffffff")
 root.resizable(0,0)
 
@@ -231,11 +162,11 @@ lblInstruction = Label(
     font = ("Consolas",14),
     justify = "center",
 )
-lblInstruction.pack(pady=(10,100))
+lblInstruction.pack(pady=(10,40))
 
 lblRules= Label(
     root,
-    text = "This quiz contains 10 questions\nYou will get 20 seconds to solve a question\nOnce you select a radio button that will be a final choice\nHence think before you select",
+    text = "This test examines if you have color vision deficiency\nSelect teh record button to record your responses\nMake sure you are near to your microphone\nAlso, your background is silent",
     width = 100,
     font = ("Times",14),
     background =  "#000000",
@@ -244,4 +175,3 @@ lblRules= Label(
 lblRules.pack()
     
 root.mainloop()
-

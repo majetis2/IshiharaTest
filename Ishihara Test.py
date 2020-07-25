@@ -109,6 +109,7 @@ def startquiz():
 
 
 def startIspressed():
+    labelbackground.destroy()
     labelimage.destroy()
     labeltext.destroy()
     lblInstruction.destroy()
@@ -121,19 +122,23 @@ def startIspressed():
 
 root = tkinter.Tk()
 root.title('Ishihara Test')
-root.geometry('411x823')
+root.geometry('411x650')
 root.config(background = "#ffffff")
 root.resizable(0,0)
 
+back_image = PhotoImage(file="Background.png")   #This is for background image
+labelbackground = Label(root, image=back_image)
+labelbackground.grid(row=0, column=0)
 
-img1 = PhotoImage(file="1.png")
+
+img1 = PhotoImage(file="1.png")    #This is for logo
 
 labelimage = Label(
     root,
     image = img1,
     background = "#ffffff"
 )
-labelimage.pack(pady=(40,0))
+labelimage.grid(row=0,column=0,sticky='N',pady=120)
 
 labeltext = Label(
     root,
@@ -141,7 +146,7 @@ labeltext = Label(
     font = ("Comic sans MS",24,"bold"),
     background = "#ffffff",
 )
-labeltext.pack(pady=(0,50))
+labeltext.grid(row=0,column=0,sticky='S',pady=245)
 
 
 img2 = PhotoImage(file="Frame.png")
@@ -153,25 +158,26 @@ btnStart = Button(
     border = 0,
     command = startIspressed,
 )
-btnStart.pack()
+btnStart.grid(row=0,column=0,sticky='S',pady=150)
 
 lblInstruction = Label(
     root,
-    text = "Read the Rules And\nClick Start Once You Are ready",
+    text = "Press Record Button and record your responses\nClick Start Once You Are ready",
     background = "#ffffff",
-    font = ("Consolas",14),
-    justify = "center",
+    font = ("Consolas",10),
 )
-lblInstruction.pack(pady=(10,40))
+lblInstruction.grid(row=0,column=0,sticky='S',pady=80)
 
 lblRules= Label(
     root,
     text = "This test examines if you have color vision deficiency\nSelect teh record button to record your responses\nMake sure you are near to your microphone\nAlso, your background is silent",
     width = 100,
     font = ("Times",14),
+    wraplength = 50,
+    justify = "center",
     background =  "#000000",
     foreground = "#FACA2F",
 )
-lblRules.pack()
+#lblRules.grid(row=0,column=0,sticky='S',pady=20)
     
 root.mainloop()
